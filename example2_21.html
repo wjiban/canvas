@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>曲线</title>
+</head>
+<body>
+	<canvas id = 'canvas' width="1000px" height="1000px"></canvas>
+	<script type="text/javascript" src="example.js"></script>
+	<script type="text/javascript">
+	
+		context.lineWidth='5';
+		context.beginPath();
+		context.rect(20,20,100,100);
+		context.stroke();
+		context.beginPath();
+		context.arc(300,140,100,0*Math.PI,2*Math.PI,true);
+		context.stroke();
+		context.beginPath();
+		context.arc(250,90,30,0*Math.PI,2*Math.PI,false)
+		context.arc(250,160,30,0*Math.PI,2*Math.PI,false)
+		// context.closePath()//封闭
+		context.stroke();
+		// context.fill()
+
+		context.fill()
+		star(500,200,50);
+		star(700,200,15)
+		function star(x, y,R){
+			context.strokeStyle='rgba(1,100,1,1)'
+			var pi = Math.PI;
+			context.beginPath();
+			for(var i=0;i<5;i++){
+				var radian =pi/2-(i*2*pi/5)
+				context.lineTo(x+R*Math.cos(radian),y-R*Math.sin(radian));
+				context.lineTo(x+R/2*Math.cos(radian-pi/5),y-R/2*Math.sin(radian-pi/5));
+			}
+			context.closePath()
+			// console.log(Math.cos(0))
+			
+			// context.lineTo(400,320);
+			context.stroke();
+		}
+	</script>
+</body>
+</html>
