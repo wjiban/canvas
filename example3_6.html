@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas" width="1000" height="500">your explore don't support canvas</canvas>
+    <script src="./example.js" ></script>
+    <script src="./example/tool.js"></script>
+    <script>
+         context.fillStyle='rgba(1,1,1,1)';
+         var loc={};
+         var endLoc={}
+         var press=false;
+         var drawingSurfaceImageData;
+        
+        //画网格
+        drawGrid()
+        //保存现有图画
+        saveDrawingSurface()
+        canvas.onmousedown=function(e){
+            e.preventDefault();
+            loc= windowToCanvas(e.clientX,e.clientY);
+            press=true;
+        };
+        canvas.onmousemove=function(e){
+            if(press){
+                endLoc=windowToCanvas(e.clientX,e.clientY);
+                restoreDrawingSurface();
+               
+                drawLine(loc,endLoc)
+            }else{
+                return;
+            }
+        }
+        canvas.onmouseup=function(e){
+            if(press){
+                press=false;
+                 //保存当前状态
+                saveDrawingSurface();
+            }else{
+                return;
+               
+            }
+        }
+      
+       
+    </script>
+</body>
+</html>
