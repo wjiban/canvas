@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas" width="1000" height="500"></canvas>
+    <script src="./example.js" ></script>
+    <script>
+        context.fillStyle='rgba(1,1,1,0,5)'
+        context.beginPath();
+        context.moveTo(100,100);
+        context.lineTo(300,300);
+        context.closePath()
+        context.stroke()
+        function drawGrid(context,stepX,stepY){
+            for(var i = 0;i<context.canvas.width;i+=stepX){
+                context.beginPath();
+                context.moveTo(i,0);
+                context.lineTo(i+stepX,0);
+                context.stroke();
+            }
+            for(var j = 0;j<context.canvas.height;j+=stepY){
+                context.beginPath();
+                context.moveTo(0,j);
+                context.lineTo(0,j+stepY);
+                context.lineTo(5,j+stepY)
+                context.stroke();
+            }
+        }
+        drawGrid(context,20,20)
+    </script>
+</body>
+</html>

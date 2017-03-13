@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>2/20</title>
+</head>
+<body>
+	<canvas id='canvas' width='1000px'></canvas>
+	<script type="text/javascript" src="example.js"></script>
+	<script type="text/javascript">
+		gradient = context.createLinearGradient(135,20,1500,120);
+		// shdow = context.
+		gradient.addColorStop(0,'blue');
+		gradient.addColorStop(0.2,'yellow')
+		gradient.addColorStop(0.4,'black');
+		gradient.addColorStop(0.6,'green');
+		gradient.addColorStop(0.8,'red')
+		context.lineWidth=10;
+		// context.fillText('hello',120,80)
+		// context.strokeStyle='chocolate'
+		context.fillStyle='rgba(245,150,170,1)';
+		// context.fillText('hello,canvas',120,10);
+	
+		// context.fillRect(120,20,10000,10);
+		function shadow(){
+			context.shadowColor = 'rgba(0,0,0,0.7)';
+			context.shadowOffsetX = 4;
+			context.shadowOffsetY = -5;
+			context.shadowBlur = 5;
+		}
+		// shadow();
+			context.strokeRect(10,20,100,100);
+			context.font= '80px 微软雅黑'
+			context.fillText('颖',200,100);
+			context.font= '80px cuisive'
+			context.fillText('颖',300,100);
+			context.font= '80px 楷体'
+			context.fillText('颖',400,100);
+			context.font= '80px 宋体'
+			context.fillText('颖',500,100)
+	</script>
+</body>
+</html>
