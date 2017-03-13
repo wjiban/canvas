@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id='canvas' width="1000" height="800"></canvas>
+    <script src="example.js"></script>
+    <script src="./example/tool.js"></script>
+    <script src="./example/smart.js"></script>
+    <script src="./example/polygon.js"></script>
+    <script>
+         var polygon = new Polygon(400, 300,
+                     300, 
+                     4,30
+                   );
+        var loc={};
+        var press=false;
+        draw.drawGrid();
+        draw.saveDrawingSurface();
+        canvas.onmousedown=function(e){
+            e.preventDefault();
+            loc= draw.windowToCanvas(e.clientX,e.clientY);
+            press=true;
+        };
+        canvas.onmousemove=function(e){
+            if(press){
+                endLoc=draw.windowToCanvas(e.clientX,e.clientY);
+                draw.restoreDrawingSurface();
+               polygon.stroke(context)
+                // draw.drawLine(loc,endLoc)
+            }else{
+                return;
+            }
+        }
+        canvas.onmouseup=function(e){
+            if(press){
+                press=false;
+                 //保存当前状态
+                draw.saveDrawingSurface();
+            }else{
+                return;
+               
+            }
+        }
+
+        // polygon.stroke(context)
+    </script>
+</body>
+</html>
