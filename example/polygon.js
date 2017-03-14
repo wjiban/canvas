@@ -33,7 +33,7 @@ Polygon.prototype = {
         }
         context.closePath();
     },
-     stroke: function (context) {
+    stroke: function (context) {
       context.save();
       this.createPath(context);
       context.strokeStyle = this.strokeStyle;
