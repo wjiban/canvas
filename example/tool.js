@@ -81,19 +81,17 @@ windowToCanvas:function(x,y){
             },
             mousemove:function(e){
                 canvasEvent.endLoc = draw.windowToCanvas(e.clientX, e.clientY);
-                // console.log(press);
-                    // console.log(polygons)
                 if (canvasEvent.press && canvasEvent.editModel) {
                     canvasEvent.clickedPolygon.x =canvasEvent.endLoc.x - canvasEvent.offsetX;
                     canvasEvent.clickedPolygon.y = canvasEvent.endLoc.y - canvasEvent.offsetY;
                     context.clearRect(0, 0, canvas.width, canvas.height);
                     draw.drawGrid();
-                    canvasEvent.drawPolygons()
+                    drawPolygon.movePolygon()
                 } else {
                     if (canvasEvent.press) {
 
                         draw.restoreDrawingSurface();
-                        canvasEvent.drawPolygon(canvasEvent.endLoc)
+                        drawPolygon.drawPolygon(canvasEvent.endLoc)
                     } else {
                         return;
                     }
@@ -106,14 +104,20 @@ windowToCanvas:function(x,y){
                     // draw.saveDrawingSurface();
                 } else {
                     draw.restoreDrawingSurface();
-                    canvasEvent.drawPolygon(canvasEvent.endLoc)
+                    drawPolygon.drawPolygon(canvasEvent.endLoc)
                 }
             },
+            
+            
+
+          
+        }
+        var drawPolygon = {
             drawPolygon:function(endLoc){
                 console.log(canvasEvent.loc)
                 var radius = Math.sqrt(Math.pow(endLoc.x - canvasEvent.loc.x, 2) + Math.pow(endLoc.y - canvasEvent.loc.y, 2));
                 var polygon = new Polygon(canvasEvent.loc.x, canvasEvent.loc.y, radius, 5, 30, context.strokeStyle, context.fillStyle);
-                canvasEvent.drawPolygonChild(polygon);
+                drawPolygon.drawPolygonChild(polygon);
                 console.log(radius)
                 if (!canvasEvent.press) {
                     canvasEvent.polygons.push(polygon);
@@ -124,13 +128,10 @@ windowToCanvas:function(x,y){
                 polygon.stroke(context);
                 polygon.fill(context);
             },
-            drawPolygons:function(){
+            movePolygon:function(){
                     canvasEvent.polygons.forEach(function (polygon) {
-                    canvasEvent.drawPolygonChild(polygon)
+                    drawPolygon.drawPolygonChild(polygon)
                 })
 
             }
-            
-
-          
         }

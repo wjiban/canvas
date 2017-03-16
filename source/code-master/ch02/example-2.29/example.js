@@ -249,17 +249,14 @@ function cursorInEndPoint(loc) {
 
 function cursorInControlPoint(loc) {
    var pt;
-
    controlPoints.forEach( function(point) {
       context.beginPath();
       context.arc(point.x, point.y, 
                   CONTROL_POINT_RADIUS, 0, Math.PI*2, false);
-
       if (context.isPointInPath(loc.x, loc.y)) {
          pt = point;
       }
    });
-
    return pt;
 }
 
@@ -267,9 +264,7 @@ function updateDraggingPoint(loc) {
    draggingPoint.x = loc.x;
    draggingPoint.y = loc.y;
 }
-
 // Canvas event handlers..............................................
-
 canvas.onmousedown = function (e) {
    var loc = windowToCanvas(e.clientX, e.clientY);
 
