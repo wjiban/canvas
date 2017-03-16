@@ -145,7 +145,6 @@ function drawRubberbandShape(loc, sides, startAngle) {
                      context.fillStyle,
                      fillCheckbox.checked);
    drawPolygon(polygon);
-   
    if (!dragging) {
       polygons.push(polygon);
    }

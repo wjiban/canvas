@@ -1,57 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
 </head>
+
 <body>
-    <canvas id='canvas' width="1000" height="800"></canvas>
+    <div>
+        Edit: <input type='checkbox' id='editCheckbox' style="position: absolute" />
+    </div>
+    <canvas id='canvas'  width="1000" height="800"></canvas>
     <script src="example.js"></script>
     <script src="./example/tool.js"></script>
     <script src="./example/smart.js"></script>
     <script src="./example/polygon.js"></script>
     <script>
-         var polygon = new Polygon(400, 300,
-                    130, 
-                     6,30
-                   );
-        var loc={};
-        var press=false;
+        var polygons = [];
+        // 编辑模式是否打开
+        var edit = document.getElementById("editCheckbox");
+        context.fillStyle = 'rgba(1,1,1,0.4)'
         draw.drawGrid();
-        draw.saveDrawingSurface();
-        canvas.onmousedown=function(e){
-            e.preventDefault();
-            loc= draw.windowToCanvas(e.clientX,e.clientY);
-            press=true;
-        };
-        canvas.onmousemove=function(e){
-            if(press){
-                endLoc=draw.windowToCanvas(e.clientX,e.clientY);
-                draw.restoreDrawingSurface();
-                polygon.x=loc.x;
-                polygon.y=loc.y;
-                polygon.radius=Math.sqrt(Math.pow(endLoc.x-loc.x,2)+Math.pow(endLoc.y-loc.y,2));
-                polygon.stroke(context);
-                polygon.fillStyle="rgba(232,182,71,0.5)"
-                polygon.fill(context)
-                // draw.drawLine(loc,endLoc)
-            }else{
-                return;
-            }
-        }
-        canvas.onmouseup=function(e){
-            if(press){
-                press=false;
-                 //保存当前状态
-                draw.saveDrawingSurface();
-            }else{
-                return;
-               
-            }
-        }
-        // polygon.stroke(context)
+         edit.addEventListener('click', function(){
+             if (this.checked) {
+                    console.log('gasdfffff')
+                    canvasEvent.editModel = true;
+                } else {
+                    console.log('dsf')
+                    canvasEvent.editModel = false;
+                    }
+         });   
+        canvas.onmousedown = canvasEvent.mousedown
+        canvas.onmousemove = canvasEvent.mousemove;
+        canvas.onmouseup=canvasEvent.mouseup;
     </script>
 </body>
+
 </html>
