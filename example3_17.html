@@ -9,11 +9,15 @@
 <body>
       <canvas id='canvas'  width="1000" height="500">换浏览器</canvas>
     <script src="example.js"></script>
+    <script src="./example/BezierCurve.js"></script>
     <script src="./example/tool.js"></script>
     <script src="./example/smart.js"></script>
     <script src="./example/polygon.js"></script>
     <script>
-        draw.drawGrid()
+        draw.drawGrid();
+        canvas.onmousedown = canvasEvent.mousedown
+        canvas.onmousemove = canvasEvent.mousemove;
+        canvas.onmouseup=canvasEvent.mouseup;
     </script>
 </body>
 </html>

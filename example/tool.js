@@ -19,33 +19,33 @@
             }
         },
         //画线段
-drawLine: function (pointA,pointB){
-    context.beginPath();
-    context.lineWidth=2
-    context.strokeStyle='rgba(17,50,133,1)'
-    context.moveTo(pointA.x,pointA.y);
-    context.lineTo(pointB.x,pointB.y);
-    context.stroke()
-},
+    drawLine: function (pointA,pointB){
+        context.beginPath();
+        context.lineWidth=2
+        context.strokeStyle='rgba(17,50,133,1)'
+        context.moveTo(pointA.x,pointA.y);
+        context.lineTo(pointB.x,pointB.y);
+        context.stroke()
+    },
   //还原保存的画布
-restoreDrawingSurface:function () {
-    context.putImageData(drawingSurfaceImageData, 0, 0);
-},
-saveDrawingSurface:function () {
-        drawingSurfaceImageData = context.getImageData(0, 0,
-                        canvas.width,
-                        canvas.height);
-},
-//坐标转换
-windowToCanvas:function(x,y){
-    // console.log(x+y)
-    var canvasLocation = canvas.getBoundingClientRect();
-    return {x:x-canvasLocation.left,
-            y:y-canvasLocation.top }
-    }
+    restoreDrawingSurface:function () {
+        context.putImageData(drawingSurfaceImageData, 0, 0);
+    },
+    saveDrawingSurface:function () {
+            drawingSurfaceImageData = context.getImageData(0, 0,
+                            canvas.width,
+                            canvas.height);
+    },
+    //坐标转换
+    windowToCanvas:function(x,y){
+        // console.log(x+y)
+        var canvasLocation = canvas.getBoundingClientRect();
+        return {x:x-canvasLocation.left,
+                y:y-canvasLocation.top }
+        }
  }
   // 用对象 去表示
-        var canvasEvent ={
+var canvasEvent ={
             loc:undefined,
             endLoc:undefined,
             press:false,
@@ -86,12 +86,15 @@ windowToCanvas:function(x,y){
                     canvasEvent.clickedPolygon.y = canvasEvent.endLoc.y - canvasEvent.offsetY;
                     context.clearRect(0, 0, canvas.width, canvas.height);
                     draw.drawGrid();
-                    drawPolygon.movePolygon()
+                    // drawPolygon.movePolygon()
                 } else {
                     if (canvasEvent.press) {
 
                         draw.restoreDrawingSurface();
-                        drawPolygon.drawPolygon(canvasEvent.endLoc)
+                        drawBezierCurve.getControlPoint(canvasEvent.loc,canvasEvent.endLoc);
+                        drawBezierCurve.getEndPoint(canvasEvent.loc,canvasEvent.endLoc);
+                        drawBezierCurve.drawBezierCurve()
+                        // drawPolygon.drawPolygon(canvasEvent.endLoc)
                     } else {
                         return;
                     }
@@ -104,7 +107,13 @@ windowToCanvas:function(x,y){
                     // draw.saveDrawingSurface();
                 } else {
                     draw.restoreDrawingSurface();
-                    drawPolygon.drawPolygon(canvasEvent.endLoc)
+                    // drawBezierCurve.initDraw(canvasEvent.loc,canvasEvent.endLoc)
+                    var bezierCurve = new BezierCurve(canvasEvent.loc,canvasEvent.endLoc);
+                    var aaaa= bezierCurve.getPathPoints();
+                    bezierCurve.drawPointRound(context);
+                    bezierCurve.drawBezierCurve(context)
+                    // canvasEvent.editModel=true;
+                    // drawPolygon.drawPolygon(canvasEvent.endLoc)
                 }
             },
             
@@ -112,26 +121,65 @@ windowToCanvas:function(x,y){
 
           
         }
-        var drawPolygon = {
-            drawPolygon:function(endLoc){
-                console.log(canvasEvent.loc)
-                var radius = Math.sqrt(Math.pow(endLoc.x - canvasEvent.loc.x, 2) + Math.pow(endLoc.y - canvasEvent.loc.y, 2));
-                var polygon = new Polygon(canvasEvent.loc.x, canvasEvent.loc.y, radius, 5, 30, context.strokeStyle, context.fillStyle);
-                drawPolygon.drawPolygonChild(polygon);
-                console.log(radius)
-                if (!canvasEvent.press) {
-                    canvasEvent.polygons.push(polygon);
-                }
-            },
-            drawPolygonChild:function(polygon){
-                context.beginPath();
-                polygon.stroke(context);
-                polygon.fill(context);
-            },
-            movePolygon:function(){
-                    canvasEvent.polygons.forEach(function (polygon) {
-                    drawPolygon.drawPolygonChild(polygon)
-                })
+var drawBezierCurve={
+    controlPoint:[{},{}],
+    endPoint:[{},{}],
+    initDraw:function(startLoc,endLoc){
+        drawBezierCurve.getControlPoint(startLoc,endLoc);
+        drawBezierCurve.getEndPoint(startLoc,endLoc);
+        drawBezierCurve.drawBezierCurve();
+        if(!canvasEvent.press){
 
-            }
         }
+    },
+    getControlPoint:function(startLoc,endLoc){
+        drawBezierCurve.controlPoint[0].x=startLoc.x;
+        drawBezierCurve.controlPoint[0].y=endLoc.y;        
+        drawBezierCurve.controlPoint[1].x=endLoc.x;
+        drawBezierCurve.controlPoint[1].y=startLoc.y;
+        drawBezierCurve.drawControlPoint(drawBezierCurve.controlPoint[0]);
+        drawBezierCurve.drawControlPoint(drawBezierCurve.controlPoint[1]);
+    },
+    getEndPoint:function(startLoc,endLoc){
+        drawBezierCurve.endPoint[0]=startLoc;
+        drawBezierCurve.endPoint[1]=endLoc;      
+        drawBezierCurve.drawControlPoint(drawBezierCurve.endPoint[0]);
+        drawBezierCurve.drawControlPoint(drawBezierCurve.endPoint[1]);
+    },
+    drawControlPoint:function(point){
+        context.beginPath();
+        context.arc(point.x,point.y,10,2*Math.PI,false);
+        context.stroke()
+    },
+    drawBezierCurve:function(){
+        context.beginPath();
+        context.moveTo(drawBezierCurve.endPoint[0].x,drawBezierCurve.endPoint[0].y);
+        context.bezierCurveTo(drawBezierCurve.controlPoint[0].x,drawBezierCurve.controlPoint[0].y,
+                              drawBezierCurve.controlPoint[1].x,drawBezierCurve.controlPoint[1].y,
+                              drawBezierCurve.endPoint[1].x,drawBezierCurve.endPoint[1].y)
+        context.stroke();
+    }
+}
+var drawPolygon = {
+    drawPolygon:function(endLoc){
+        console.log(canvasEvent.loc)
+        var radius = Math.sqrt(Math.pow(endLoc.x - canvasEvent.loc.x, 2) + Math.pow(endLoc.y - canvasEvent.loc.y, 2));
+        var polygon = new Polygon(canvasEvent.loc.x, canvasEvent.loc.y, radius, 5, 30, context.strokeStyle, context.fillStyle);
+        drawPolygon.drawPolygonChild(polygon);
+        console.log(radius)
+        if (!canvasEvent.press) {
+            canvasEvent.polygons.push(polygon);
+        }
+    },
+    drawPolygonChild:function(polygon){
+        context.beginPath();
+        polygon.stroke(context);
+        polygon.fill(context);
+    },
+    movePolygon:function(){
+            canvasEvent.polygons.forEach(function (polygon) {
+            drawPolygon.drawPolygonChild(polygon)
+        })
+
+    }
+}
