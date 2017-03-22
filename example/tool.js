@@ -1,6 +1,5 @@
  var draw ={
     drawGrid: function (){
-            console.log(canvas.width)
             for(var i= 0; i<=canvas.width;i+=20){
                 context.lineWidth=0.5;
                 context.beginPath();
@@ -46,81 +45,112 @@
  }
   // 用对象 去表示
 var canvasEvent ={
-            loc:undefined,
-            endLoc:undefined,
-            press:false,
-            editModel:false,
-            offsetX:undefined,
-            offsetY:undefined,
-            polygons :[],
-            clickedPolygon:undefined,
-            checked:function(e){
-                console.log(this)
-               
-            },
-            mousedown:function(e){
-                canvasEvent.press = true;
-                canvasEvent.loc = draw.windowToCanvas.call(this,e.clientX, e.clientY);
-                e.preventDefault();
-                if (canvasEvent.editModel) {
-                    canvasEvent.clickedPolygon= undefined
-                    canvasEvent.polygons.forEach(function (polygon) {
-                        polygon.createPath(context);
-                        if (context.isPointInPath(canvasEvent.loc.x, canvasEvent.loc.y)) {
-                            draw.saveDrawingSurface();
-                            canvasEvent.clickedPolygon = polygon;
-                           canvasEvent.offsetX = canvasEvent.loc.x - polygon.x;
-                            canvasEvent.offsetY = canvasEvent.loc.y - polygon.y;
-                           canvasEvent.press = true;
-                        }
-                    })
-                } else {
+    loc:undefined,
+    endLoc:undefined,
+    press:false,
+    editModel:false,
+    offsetX:undefined,
+    offsetY:undefined,
+    polygons :[],
+    clickRound:undefined,
+    dragRound:false,
+    bezierCurves:[],
+    clickedPolygon:undefined,
+    checked:function(e){
+        console.log(this)
+        
+    },
+    mousedown:function(e){
+        canvasEvent.press = true;
+        canvasEvent.loc = draw.windowToCanvas.call(this,e.clientX, e.clientY);
+        e.preventDefault();
+        if (canvasEvent.editModel) {
+            canvasEvent.clickedPolygon= undefined
+            canvasEvent.polygons.forEach(function (polygon) {
+                polygon.createPath(context);
+                if (context.isPointInPath(canvasEvent.loc.x, canvasEvent.loc.y)) {
                     draw.saveDrawingSurface();
+                    canvasEvent.clickedPolygon = polygon;
+                    canvasEvent.offsetX = canvasEvent.loc.x - polygon.x;
+                    canvasEvent.offsetY = canvasEvent.loc.y - polygon.y;
                     canvasEvent.press = true;
                 }
-            },
-            mousemove:function(e){
-                canvasEvent.endLoc = draw.windowToCanvas(e.clientX, e.clientY);
-                if (canvasEvent.press && canvasEvent.editModel) {
-                    canvasEvent.clickedPolygon.x =canvasEvent.endLoc.x - canvasEvent.offsetX;
-                    canvasEvent.clickedPolygon.y = canvasEvent.endLoc.y - canvasEvent.offsetY;
+            })
+        } else {
+                canvasEvent.bezierCurves.forEach(function(bezierCurve){
+                    canvasEvent.clickRound =  cursorIsRound(bezierCurve.getControlPoints())
+                    if(canvasEvent.clickRound) {
+                        canvasEvent.dragRound=true;
+                        canvasEvent.offsetX = canvasEvent.loc.x-canvasEvent.clickRound.x;
+                        canvasEvent.offsetY = canvasEvent.loc.y-canvasEvent.clickRound.y;
+                        //    console.log(canvasEvent.offsetX)
+                    }     
+                })
+            draw.saveDrawingSurface();
+            canvasEvent.press = true;
+        }
+    },
+
+    mousemove:function(e){
+        canvasEvent.endLoc = draw.windowToCanvas(e.clientX, e.clientY);
+        if (canvasEvent.press && canvasEvent.editModel) {
+            canvasEvent.clickedPolygon.x =canvasEvent.endLoc.x - canvasEvent.offsetX;
+            canvasEvent.clickedPolygon.y = canvasEvent.endLoc.y - canvasEvent.offsetY;
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            draw.drawGrid();
+        } else {
+            if (canvasEvent.press) {
+                if(canvasEvent.dragRound){
+                    canvasEvent.clickRound.x =canvasEvent.endLoc.x - canvasEvent.offsetX;
+                    canvasEvent.clickRound.y = canvasEvent.endLoc.y - canvasEvent.offsetY;
                     context.clearRect(0, 0, canvas.width, canvas.height);
                     draw.drawGrid();
-                    // drawPolygon.movePolygon()
-                } else {
-                    if (canvasEvent.press) {
-
-                        draw.restoreDrawingSurface();
-                        drawBezierCurve.getControlPoint(canvasEvent.loc,canvasEvent.endLoc);
-                        drawBezierCurve.getEndPoint(canvasEvent.loc,canvasEvent.endLoc);
-                        drawBezierCurve.drawBezierCurve()
-                        // drawPolygon.drawPolygon(canvasEvent.endLoc)
-                    } else {
-                        return;
-                    }
-                }
-            },
-            mouseup:function(e){
-                canvasEvent.endLoc = draw.windowToCanvas(e.clientX, e.clientY);
-                canvasEvent.press = false;
-                if (canvasEvent.editModel) {
-                    // draw.saveDrawingSurface();
-                } else {
+                    console.log(canvasEvent.bezierCurves)
+                    drawBezierCurve.drawBezierCurves()
+                }else{
                     draw.restoreDrawingSurface();
-                    // drawBezierCurve.initDraw(canvasEvent.loc,canvasEvent.endLoc)
                     var bezierCurve = new BezierCurve(canvasEvent.loc,canvasEvent.endLoc);
-                    var aaaa= bezierCurve.getPathPoints();
                     bezierCurve.drawPointRound(context);
-                    bezierCurve.drawBezierCurve(context)
-                    // canvasEvent.editModel=true;
-                    // drawPolygon.drawPolygon(canvasEvent.endLoc)
+                    bezierCurve.drawBezierCurve(context);
                 }
-            },
-            
-            
-
-          
+                
+            } else {
+                return;
+            }
         }
+    },
+    mouseup:function(e){
+        canvasEvent.endLoc = draw.windowToCanvas(e.clientX, e.clientY);
+        canvasEvent.press = false;
+        if (canvasEvent.editModel) {
+            
+        } else {
+            if(canvasEvent.dragRound){
+                canvasEvent.dragRound=false;
+            }else{
+                draw.restoreDrawingSurface();
+                drawBezierCurve.drawBezierCurve(canvasEvent.loc,canvasEvent.endLoc)
+            }
+            
+            
+        }
+    },
+}
+    function cursorIsRound(points){
+        console.log(points)
+        var clickRound;
+        points.forEach(function(point){
+            context.beginPath();
+             context.arc(point.x,point.y,10,2*Math.PI,false);
+            //  context.stroke()
+            if(context.isPointInPath(canvasEvent.loc.x,canvasEvent.loc.y)){
+                 clickRound=point
+
+            }
+        })
+         console.log(clickRound)
+            return clickRound;
+    }
 var drawBezierCurve={
     controlPoint:[{},{}],
     endPoint:[{},{}],
@@ -151,13 +181,21 @@ var drawBezierCurve={
         context.arc(point.x,point.y,10,2*Math.PI,false);
         context.stroke()
     },
-    drawBezierCurve:function(){
-        context.beginPath();
-        context.moveTo(drawBezierCurve.endPoint[0].x,drawBezierCurve.endPoint[0].y);
-        context.bezierCurveTo(drawBezierCurve.controlPoint[0].x,drawBezierCurve.controlPoint[0].y,
-                              drawBezierCurve.controlPoint[1].x,drawBezierCurve.controlPoint[1].y,
-                              drawBezierCurve.endPoint[1].x,drawBezierCurve.endPoint[1].y)
-        context.stroke();
+    drawBezierCurve:function(loc,endLoc){
+         var bezierCurve = new BezierCurve(loc,endLoc);
+        //  bezierCurve.drawPointRound(context);
+         bezierCurve.drawBezierCurve(context);
+         bezierCurve.createPath(context)
+         if(!canvasEvent.press){
+            canvasEvent.bezierCurves.push(bezierCurve);
+         }
+       
+    },
+    drawBezierCurves:function(){
+        canvasEvent.bezierCurves.forEach(function(bezierCurve){
+            bezierCurve.drawPointRound(context);
+                    bezierCurve.drawBezierCurve(context);
+        })
     }
 }
 var drawPolygon = {
@@ -166,7 +204,6 @@ var drawPolygon = {
         var radius = Math.sqrt(Math.pow(endLoc.x - canvasEvent.loc.x, 2) + Math.pow(endLoc.y - canvasEvent.loc.y, 2));
         var polygon = new Polygon(canvasEvent.loc.x, canvasEvent.loc.y, radius, 5, 30, context.strokeStyle, context.fillStyle);
         drawPolygon.drawPolygonChild(polygon);
-        console.log(radius)
         if (!canvasEvent.press) {
             canvasEvent.polygons.push(polygon);
         }
@@ -178,7 +215,8 @@ var drawPolygon = {
     },
     movePolygon:function(){
             canvasEvent.polygons.forEach(function (polygon) {
-            drawPolygon.drawPolygonChild(polygon)
+            drawPolygon.drawPolygonChild(polygon);
+
         })
 
     }
