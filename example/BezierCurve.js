@@ -1,7 +1,6 @@
 var BezierCurve = function(startLoc,endLoc){
     this.startLoc = startLoc;
     this.endLoc = endLoc;
-    console.log('dddd'+this.startLoc);
     this.point1 = {
         x:startLoc.x,
         y:endLoc.y
@@ -10,9 +9,6 @@ var BezierCurve = function(startLoc,endLoc){
         x:endLoc.x,
         y:startLoc.y
     }
-    // this.point1.x=this.startLoc.x;
-    // this.point1.y=this.endLoc.y;
-    // console.log(this.point2)
 }
 BezierCurve.prototype = {
     getControlPoints:function(){

@@ -37,7 +37,6 @@
     },
     //坐标转换
     windowToCanvas:function(x,y){
-        // console.log(x+y)
         var canvasLocation = canvas.getBoundingClientRect();
         return {x:x-canvasLocation.left,
                 y:y-canvasLocation.top }
@@ -57,7 +56,6 @@ var canvasEvent ={
     bezierCurves:[],
     clickedPolygon:undefined,
     checked:function(e){
-        console.log(this)
         
     },
     mousedown:function(e){
@@ -78,13 +76,17 @@ var canvasEvent ={
             })
         } else {
                 canvasEvent.bezierCurves.forEach(function(bezierCurve){
-                    canvasEvent.clickRound =  cursorIsRound(bezierCurve.getControlPoints())
-                    if(canvasEvent.clickRound) {
+                    var clickRound,
+                    clickPathRound;
+                    clickRound =  cursorIsRound(bezierCurve.getControlPoints());
+                    clickPathRound = cursorIsRound(bezierCurve.getPathPoints());
+                    if(clickRound||clickPathRound) {
+                        canvasEvent.clickRound =clickRound||clickPathRound;
+                        // console.log(canvasEvent.clickRound)
                         canvasEvent.dragRound=true;
                         canvasEvent.offsetX = canvasEvent.loc.x-canvasEvent.clickRound.x;
                         canvasEvent.offsetY = canvasEvent.loc.y-canvasEvent.clickRound.y;
-                        //    console.log(canvasEvent.offsetX)
-                    }     
+                    }   
                 })
             draw.saveDrawingSurface();
             canvasEvent.press = true;
@@ -105,7 +107,6 @@ var canvasEvent ={
                     canvasEvent.clickRound.y = canvasEvent.endLoc.y - canvasEvent.offsetY;
                     context.clearRect(0, 0, canvas.width, canvas.height);
                     draw.drawGrid();
-                    console.log(canvasEvent.bezierCurves)
                     drawBezierCurve.drawBezierCurves()
                 }else{
                     draw.restoreDrawingSurface();
@@ -137,7 +138,6 @@ var canvasEvent ={
     },
 }
     function cursorIsRound(points){
-        console.log(points)
         var clickRound;
         points.forEach(function(point){
             context.beginPath();
@@ -148,7 +148,6 @@ var canvasEvent ={
 
             }
         })
-         console.log(clickRound)
             return clickRound;
     }
 var drawBezierCurve={
@@ -183,7 +182,7 @@ var drawBezierCurve={
     },
     drawBezierCurve:function(loc,endLoc){
          var bezierCurve = new BezierCurve(loc,endLoc);
-        //  bezierCurve.drawPointRound(context);
+         bezierCurve.drawPointRound(context);
          bezierCurve.drawBezierCurve(context);
          bezierCurve.createPath(context)
          if(!canvasEvent.press){
@@ -200,7 +199,6 @@ var drawBezierCurve={
 }
 var drawPolygon = {
     drawPolygon:function(endLoc){
-        console.log(canvasEvent.loc)
         var radius = Math.sqrt(Math.pow(endLoc.x - canvasEvent.loc.x, 2) + Math.pow(endLoc.y - canvasEvent.loc.y, 2));
         var polygon = new Polygon(canvasEvent.loc.x, canvasEvent.loc.y, radius, 5, 30, context.strokeStyle, context.fillStyle);
         drawPolygon.drawPolygonChild(polygon);
