@@ -82,7 +82,6 @@ var canvasEvent ={
                     clickPathRound = cursorIsRound(bezierCurve.getPathPoints());
                     if(clickRound||clickPathRound) {
                         canvasEvent.clickRound =clickRound||clickPathRound;
-                        // console.log(canvasEvent.clickRound)
                         canvasEvent.dragRound=true;
                         canvasEvent.offsetX = canvasEvent.loc.x-canvasEvent.clickRound.x;
                         canvasEvent.offsetY = canvasEvent.loc.y-canvasEvent.clickRound.y;
@@ -193,7 +192,7 @@ var drawBezierCurve={
     drawBezierCurves:function(){
         canvasEvent.bezierCurves.forEach(function(bezierCurve){
             bezierCurve.drawPointRound(context);
-                    bezierCurve.drawBezierCurve(context);
+            bezierCurve.drawBezierCurve(context);
         })
     }
 }
@@ -214,7 +213,6 @@ var drawPolygon = {
     movePolygon:function(){
             canvasEvent.polygons.forEach(function (polygon) {
             drawPolygon.drawPolygonChild(polygon);
-
         })
 
     }
